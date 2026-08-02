@@ -559,7 +559,7 @@ window.submitForm = async function(){
     stepLabel.textContent = 'اكتمل التسجيل 🎉';
   };
 
-  if(!CONFIG.GITHUB_TOKEN || CONFIG.GITHUB_TOKEN.includes('PASTE_YOUR')){
+  if(!CONFIG.GITHUB_TOKEN || CONFIG.GITHUB_TOKEN.includes('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')){
     console.log('بيانات النموذج (لسه مفيش توكن GitHub متظبط):', answers);
     setTimeout(finish, 500);
     return;
