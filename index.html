@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل نشاط — دليل العسيرات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --paper:#F3ECDA; --paper-2:#EAE0C8; --ink:#26362F; --ink-soft:#5B6A5F;
+    --teal:#0F4C3E; --teal-deep:#0A362C; --gold:#C79A2E; --gold-soft:#E4C874;
+    --brick:#B4552F; --line:#CBBE98; --card:#FBF8EF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(circle at 15% 8%, rgba(199,154,46,.10), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(15,76,62,.08), transparent 45%), var(--paper);
+    color:var(--ink); font-family:'Tajawal', sans-serif; min-height:100vh; padding:28px 14px 60px;
+  }
+  .wrap{max-width:640px; margin:0 auto;}
+  .head{text-align:center; margin-bottom:22px;}
+  .seal{width:66px; height:66px; margin:0 auto 10px; border:2.5px solid var(--teal); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; position:relative; background:var(--card);}
+  .seal::before{content:""; position:absolute; inset:6px; border:1px dashed var(--gold); border-radius:50%;}
+  .seal span{font-size:26px;}
+  .eyebrow{font-family:'Markazi Text', serif; font-weight:700; letter-spacing:.5px; color:var(--brick); font-size:16px; margin-bottom:2px;}
+  h1{font-family:'Markazi Text', serif; font-weight:700; font-size:38px; margin:2px 0 6px; color:var(--teal-deep);}
+  .sub{color:var(--ink-soft); font-size:14.5px; max-width:440px; margin:0 auto;}
+  .stepper{display:flex; justify-content:space-between; align-items:center; margin:26px 0 20px; padding:0 4px;}
+  .stepper .dot-line{flex:1; height:2px; background:var(--line); margin-top:-16px;}
+  .stepper .dot-line.done{background:var(--teal);}
+  .step-dot{width:30px; height:30px; border-radius:50%; background:var(--paper-2); border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:800; color:var(--ink-soft);
+    flex-shrink:0; transition:.25s;}
+  .step-dot.active{background:var(--teal); border-color:var(--teal); color:#fff; transform:scale(1.12);}
+  .step-dot.done{background:var(--gold); border-color:var(--gold); color:var(--teal-deep);}
+  .step-label{text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:26px; margin-bottom:4px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px 22px;
+    box-shadow:0 2px 0 var(--line), 0 10px 30px -18px rgba(15,76,62,.35); position:relative; overflow:hidden;}
+  .card::before{content:""; position:absolute; top:0; right:0; left:0; height:5px;
+    background:repeating-linear-gradient(90deg, var(--teal) 0 14px, var(--gold) 14px 28px); opacity:.9;}
+  .section-title{font-family:'Markazi Text', serif; font-size:24px; font-weight:700; color:var(--teal-deep); margin:6px 0 2px; display:flex; align-items:center; gap:8px;}
+  .section-note{color:var(--ink-soft); font-size:13px; margin-bottom:18px;}
+  .field{margin-bottom:16px;}
+  label{display:block; font-size:14px; font-weight:700; color:var(--ink); margin-bottom:6px;}
+  label .req{color:var(--brick); margin-inline-start:2px;}
+  label .opt{color:var(--ink-soft); font-weight:400; font-size:12px; margin-inline-start:4px;}
+  .hint{font-size:12px; color:var(--ink-soft); margin-top:5px; line-height:1.5;}
+  input[type=text], input[type=tel], input[type=email], input[type=url], input[type=number], select, textarea{
+    width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:9px; background:#fff;
+    font-family:inherit; font-size:14.5px; color:var(--ink); transition:.15s;}
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(15,76,62,.12);}
+  textarea{resize:vertical; min-height:80px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .choice-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .choice{border:1.5px solid var(--line); background:#fff; border-radius:9px; padding:9px 14px; font-size:13.5px;
+    cursor:pointer; user-select:none; transition:.15s;}
+  .choice:hover{border-color:var(--gold);}
+  .choice.sel{background:var(--teal); color:#fff; border-color:var(--teal); font-weight:700;}
+  .choice.sel.gold{background:var(--gold); border-color:var(--gold); color:var(--teal-deep);}
+  .upload{border:2px dashed var(--line); border-radius:10px; padding:16px; text-align:center; color:var(--ink-soft);
+    font-size:13px; background:repeating-linear-gradient(45deg, rgba(199,154,46,.04) 0 10px, transparent 10px 20px);}
+  .upload span{display:block; font-size:22px; margin-bottom:4px;}
+  .upload input[type=file]{margin-top:8px; width:100%;}
+  .day-row{display:grid; grid-template-columns:90px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px;}
+  .day-row .day-name{font-size:13.5px; font-weight:700; color:var(--teal-deep);}
+  .day-row input{padding:8px; font-size:13px;}
+  .hidden{display:none !important;}
+  .nav{display:flex; justify-content:space-between; gap:10px; margin-top:24px;}
+  button{font-family:inherit; font-size:14.5px; font-weight:800; border-radius:9px; padding:12px 22px; border:none; cursor:pointer; transition:.15s;}
+  .btn-next{background:var(--teal); color:#fff;}
+  .btn-next:hover{background:var(--teal-deep);}
+  .btn-back{background:transparent; color:var(--ink-soft); border:1.5px solid var(--line);}
+  .btn-back:hover{border-color:var(--ink-soft);}
+  .btn-submit{background:var(--brick); color:#fff;}
+  .btn-submit:hover{background:#8f4023;}
+  .btn-submit:disabled{opacity:.6; cursor:wait;}
+  .done-screen{text-align:center; padding:20px 10px;}
+  .done-seal{width:84px; height:84px; margin:0 auto 16px; border:3px solid var(--gold); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:38px; background:var(--card); position:relative;}
+  .done-seal::before{content:"";position:absolute;inset:8px;border:1.5px dashed var(--teal);border-radius:50%;}
+  .done-screen h2{font-family:'Markazi Text',serif; font-size:28px; color:var(--teal-deep); margin:0 0 8px;}
+  .done-screen p{color:var(--ink-soft); font-size:14.5px; max-width:380px; margin:0 auto;}
+  .err-box{background:#FBEAE3; border:1px solid var(--brick); color:#7a3218; font-size:13px; border-radius:9px; padding:10px 14px; margin-top:14px;}
+  .footer-note{text-align:center; font-size:12px; color:var(--ink-soft); margin-top:20px;}
+  .consent-row{display:flex; gap:8px; align-items:flex-start; font-weight:400; cursor:pointer; margin-top:8px;}
+  .consent-row input{margin-top:4px; width:auto;}
+  @media (max-width:420px){ h1{font-size:31px;} .card{padding:20px 16px;} .day-row{grid-template-columns:70px 1fr 1fr;} .two-col{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="seal"><span>🕌</span></div>
+    <div class="eyebrow">دليل العسيرات</div>
+    <h1>تسجيل نشاط جديد</h1>
+    <div class="sub">أضف نشاطك التجاري أو الخدمي ليصل إليك عملاؤك بسهولة. تعبئة النموذج تستغرق نحو ٥ دقائق.</div>
+  </div>
+  <div class="stepper" id="stepper"></div>
+  <div class="step-label" id="stepLabel"></div>
+  <div class="card" id="formCard"></div>
+  <div class="footer-note">🌾 بياناتك تُراجَع قبل نشرها داخل تطبيق دليل العسيرات</div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — قبل ما تنشر الموقع، عدّل القيم دي (راجع README.md)
+   ============================================================ */
+const CONFIG = {
+  GITHUB_TOKEN: "PASTE_YOUR_GITHUB_TOKEN_HERE",   // fine-grained PAT بصلاحية Contents:Read&Write على هذا المستودع فقط
+  OWNER: "YOUR_GITHUB_USERNAME",                   // اسم المستخدم أو المنظمة بتاعتك على GitHub
+  REPO: "dalil-alosayrat-form",                     // اسم المستودع
+  BRANCH: "main",
+  FILE_PATH: "data/responses.xlsx"
+};
+
+const STEPS = ["مقدّم الطلب","النشاط","الموقع","التواصل","المواعيد","الخدمات","الإنهاء"];
+let current = 0;
+let category = null;
+let hours24 = null;
+const answers = {};
+
+const card = document.getElementById('formCard');
+const stepperEl = document.getElementById('stepper');
+const stepLabel = document.getElementById('stepLabel');
+
+function renderStepper(){
+  stepperEl.innerHTML = '';
+  STEPS.forEach((s,i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i===current?' active':'') + (i<current?' done':'');
+    dot.textContent = i+1;
+    stepperEl.appendChild(dot);
+    if(i < STEPS.length-1){
+      const line = document.createElement('div');
+      line.className = 'dot-line' + (i<current?' done':'');
+      stepperEl.appendChild(line);
+    }
+  });
+  stepLabel.textContent = `خطوة ${current+1} من ${STEPS.length} — ${STEPS[current]}`;
+}
+
+function choiceGroup(name, options, multi=false, gold=false){
+  return options.map(o=>{
+    const sel = multi ? (answers[name]||[]).includes(o) : answers[name]===o;
+    return `<div class="choice${gold?' gold':''}${sel?' sel':''}" data-group="${name}" data-multi="${multi}" data-val="${o}" onclick="toggleChoice(this)">${o}</div>`;
+  }).join('');
+}
+
+window.toggleChoice = function(el){
+  const group = el.dataset.group, multi = el.dataset.multi === 'true', val = el.dataset.val;
+  if(!multi){
+    document.querySelectorAll(`.choice[data-group="${group}"]`).forEach(c=>c.classList.remove('sel'));
+    el.classList.add('sel');
+    answers[group] = val;
+  } else {
+    el.classList.toggle('sel');
+    if(!answers[group]) answers[group] = [];
+    if(answers[group].includes(val)) answers[group] = answers[group].filter(v=>v!==val);
+    else answers[group].push(val);
+  }
+}
+
+function saveTextInputs(){
+  card.querySelectorAll('input[name], select[name], textarea[name]').forEach(el=>{
+    answers[el.name] = el.value;
+  });
+}
+function v(name){ return answers[name] || ''; }
+
+function stepHTML(i){
+  switch(i){
+    case 0: return `
+      <div class="section-title">👤 بيانات مقدّم الطلب</div>
+      <div class="section-note">معلوماتك الشخصية للتواصل معك أثناء المراجعة (لا تُنشر للعملاء).</div>
+      <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input type="text" name="applicant_name" value="${v('applicant_name')}" placeholder="مثال: أحمد محمد علي"></div>
+      <div class="field"><label>رقم الجوال <span class="req">*</span></label><input type="tel" name="applicant_phone" value="${v('applicant_phone')}" placeholder="01xxxxxxxxx"></div>
+      <div class="field"><label>رقم واتساب <span class="opt">(اتركه فارغًا إذا كان نفس رقم الجوال)</span></label><input type="tel" name="applicant_whatsapp" value="${v('applicant_whatsapp')}"></div>
+      <div class="field"><label>البريد الإلكتروني <span class="opt">(اختياري)</span></label><input type="email" name="applicant_email" value="${v('applicant_email')}" placeholder="name@example.com"></div>
+      <div class="field"><label>صفتك <span class="req">*</span></label><div class="choice-grid">${choiceGroup('applicant_role',['مالك النشاط','مدير النشاط','موظف','مسؤول تسويق','أخرى'])}</div></div>`;
+    case 1: return `
+      <div class="section-title">🏪 بيانات النشاط</div>
+      <div class="section-note">اختر النوع بدقة — هذا يحدد أسئلة الخدمات المخصصة لنشاطك لاحقًا.</div>
+      <div class="field"><label>اسم النشاط بالعربية <span class="req">*</span></label><input type="text" name="activity_name_ar" value="${v('activity_name_ar')}" placeholder="مثال: صيدلية النور"></div>
+      <div class="field"><label>اسم النشاط بالإنجليزية <span class="opt">(اختياري)</span></label><input type="text" name="activity_name_en" value="${v('activity_name_en')}"></div>
+      <div class="field">
+        <label>نوع النشاط <span class="req">*</span></label>
+        <select id="typeSelect" name="activity_type" onchange="setCategory(this.value, this.options[this.selectedIndex].text)">
+          <option value="">— اختر —</option>
+          <optgroup label="🏥 طبي وصحة">
+            <option value="doctor">طبيب / عيادة</option>
+            <option value="hospital">مستشفى</option>
+            <option value="lab">معمل تحاليل</option>
+            <option value="radiology">مركز أشعة</option>
+            <option value="vet">عيادة بيطرية</option>
+          </optgroup>
+          <optgroup label="💊 صيدلة">
+            <option value="pharmacy">صيدلية</option>
+          </optgroup>
+          <optgroup label="🍽️ مطاعم ومقاهي">
+            <option value="restaurant">مطعم</option>
+            <option value="restaurant">كافيه</option>
+            <option value="restaurant">مطعم وجبات سريعة</option>
+          </optgroup>
+          <optgroup label="🛒 بقالة وأسواق">
+            <option value="grocery">سوبر ماركت</option>
+            <option value="grocery">جزارة</option>
+            <option value="grocery">أسماك</option>
+            <option value="grocery">مخبز</option>
+          </optgroup>
+          <optgroup label="🛍️ محلات تجارية">
+            <option value="retail">محل تجاري عام</option>
+            <option value="retail">ملابس</option>
+            <option value="retail">أحذية</option>
+            <option value="retail">هواتف</option>
+            <option value="retail">إلكترونيات</option>
+          </optgroup>
+          <optgroup label="🚖 نقل وتوصيل">
+            <option value="transport">سائق</option>
+            <option value="transport">توصيل طلبات</option>
+          </optgroup>
+          <optgroup label="🔧 حرفيون ومقاولات">
+            <option value="craftsman">كهربائي</option>
+            <option value="craftsman">سباك</option>
+            <option value="craftsman">نجار</option>
+            <option value="craftsman">نقاش</option>
+            <option value="craftsman">مقاول</option>
+          </optgroup>
+          <optgroup label="💇 تجميل وعناية">
+            <option value="salon">صالون حلاقة</option>
+            <option value="salon">كوافير</option>
+          </optgroup>
+          <optgroup label="🏫 تعليم وطفولة">
+            <option value="education">مدرسة</option>
+            <option value="education">حضانة</option>
+          </optgroup>
+          <optgroup label="🤝 مجتمع">
+            <option value="community">شريك مجتمعي / مبادرة</option>
+          </optgroup>
+          <optgroup label="➕ أخرى">
+            <option value="other">أخرى</option>
+          </optgroup>
+        </select>
+        <div class="hint" id="typeHint"></div>
+      </div>`;
+    case 2: return `
+      <div class="section-title">📍 الموقع</div>
+      <div class="field"><label>القرية / المنطقة <span class="req">*</span></label><input type="text" name="village" value="${v('village')}"></div>
+      <div class="field"><label>العنوان بالتفصيل <span class="req">*</span></label><textarea name="address_detail" placeholder="أقرب علامة مميزة تسهّل الوصول">${v('address_detail')}</textarea></div>
+      <div class="field"><label>رابط الموقع على Google Maps <span class="opt">(اختياري)</span></label><input type="url" name="maps_link" value="${v('maps_link')}" placeholder="https://maps.app.goo.gl/...">
+        <div class="hint">افتح Google Maps ← اضغط مطوّلًا على موقعك ← انسخ الرابط الظاهر أعلى الشاشة.</div></div>
+      <div class="field"><label>إحداثيات الموقع <span class="opt">(اختياري)</span></label>
+        <div class="two-col">
+          <input type="text" name="lat" value="${v('lat')}" placeholder="Latitude">
+          <input type="text" name="lng" value="${v('lng')}" placeholder="Longitude">
+        </div></div>`;
+    case 3: return `
+      <div class="section-title">📞 التواصل مع العملاء</div>
+      <div class="section-note">هذه البيانات ستظهر للعملاء داخل التطبيق.</div>
+      <div class="field"><label>رقم الهاتف الظاهر للعملاء <span class="req">*</span></label><input type="tel" name="public_phone" value="${v('public_phone')}"></div>
+      <div class="field"><label>رقم هاتف إضافي <span class="opt">(اختياري)</span></label><input type="tel" name="public_phone_2" value="${v('public_phone_2')}"></div>
+      <div class="field"><label>رقم واتساب للطلبات <span class="opt">(اختياري)</span></label><input type="tel" name="public_whatsapp" value="${v('public_whatsapp')}"></div>
+      <div class="field"><label>صفحة Facebook <span class="opt">(اختياري)</span></label><input type="url" name="facebook" value="${v('facebook')}"></div>
+      <div class="field"><label>Instagram <span class="opt">(اختياري)</span></label><input type="url" name="instagram" value="${v('instagram')}"></div>
+      <div class="field"><label>الموقع الإلكتروني <span class="opt">(اختياري)</span></label><input type="url" name="website" value="${v('website')}"></div>`;
+    case 4: return `
+      <div class="section-title">🕐 مواعيد العمل</div>
+      <div class="field">
+        <label>هل يعمل النشاط ٢٤ ساعة؟ <span class="req">*</span></label>
+        <div class="choice-grid" id="hoursGroup">
+          <div class="choice${hours24===true?' sel':''}" onclick="setHours(true, this)">نعم، على مدار الساعة</div>
+          <div class="choice${hours24===false?' sel':''}" onclick="setHours(false, this)">لا، له مواعيد محددة</div>
+        </div>
+      </div>
+      <div id="daysBlock" class="${hours24===false?'':'hidden'}">
+        ${['sat','sun','mon','tue','wed','thu','fri'].map((key,idx)=>{
+          const names=['السبت','الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+          return `<div class="day-row">
+            <div class="day-name">${names[idx]}</div>
+            <input type="text" name="hours_${key}_from" value="${v('hours_'+key+'_from')}" placeholder="من (مثال 9:00 ص)">
+            <input type="text" name="hours_${key}_to" value="${v('hours_'+key+'_to')}" placeholder="إلى (مثال 11:00 م)">
+          </div>`;}).join('')}
+      </div>`;
+    case 5: return renderServicesStep();
+    case 6: return `
+      <div class="section-title">💳 الدفع والصور</div>
+      <div class="field"><label>وسائل الدفع المقبولة</label><div class="choice-grid">${choiceGroup('payment_methods',['نقدًا','فيزا / ماستركارد','ميزة','إنستاباي','فودافون كاش','تحويل بنكي'],true)}</div></div>
+      <div class="field"><label>شعار النشاط <span class="opt">(اختياري)</span></label><div class="upload"><span>📎</span>اختر صورة الشعار<input type="file" accept="image/*"></div></div>
+      <div class="field"><label>صورة الواجهة <span class="opt">(اختياري)</span></label><div class="upload"><span>🏬</span>صورة واجهة المحل<input type="file" accept="image/*"></div></div>
+      <div class="field"><label>صور داخلية <span class="opt">(حتى 5 صور)</span></label><div class="upload"><span>📸</span>اختر حتى ٥ صور<input type="file" accept="image/*" multiple></div></div>
+      <div class="field"><label>قائمة الأسعار / المنيو <span class="opt">(اختياري)</span></label><div class="upload"><span>📋</span>ارفع ملف أو صورة<input type="file" accept="image/*,application/pdf"></div></div>
+      <div class="hint" style="margin-top:-8px; margin-bottom:14px;">📌 الصور مش بتتخزن تلقائيًا في هذه النسخة (اطّلع على README.md لإضافة رفع فعلي إلى GitHub).</div>
+      <div class="field"><label>كلمات بحث تساعد العملاء</label><input type="text" name="keywords" value="${v('keywords')}" placeholder="مثال: صيدلية، دواء، أطفال"></div>
+      <div class="field"><label>معلومات إضافية</label><div class="choice-grid">${choiceGroup('extra_info',['موقف سيارات','مناسب لذوي الاحتياجات','يوجد توصيل','خدمة طوارئ'],true,true)}</div></div>
+      <div class="field"><label>أي تفاصيل إضافية <span class="opt">(اختياري)</span></label><textarea name="extra_notes" placeholder="أي شيء آخر تود إضافته">${v('extra_notes')}</textarea></div>
+      <div class="field" style="margin-top:20px; border-top:1px dashed var(--line); padding-top:16px;">
+        <label class="consent-row"><input type="checkbox" id="c1"> أقرّ بأن جميع البيانات المدخلة صحيحة</label>
+        <label class="consent-row"><input type="checkbox" id="c2"> أنا صاحب النشاط أو مفوَّض رسميًا بتسجيله</label>
+        <label class="consent-row"><input type="checkbox" id="c3"> أوافق على نشر بيانات النشاط داخل التطبيق</label>
+      </div>
+      <div id="errBox"></div>`;
+  }
+}
+
+/* ============================================================
+   منطق الخدمات لكل نوع نشاط — ١٥ فئة مستقلة بأسئلة مخصصة
+   ============================================================ */
+function renderServicesStep(){
+  const catLabel = {
+    pharmacy:'صيدلية', hospital:'مستشفى', lab:'معمل تحاليل', radiology:'مركز أشعة', vet:'عيادة بيطرية',
+    doctor:'طبيب / عيادة', restaurant:'مطعم / كافيه', grocery:'بقالة / سوق', retail:'محل تجاري',
+    transport:'نقل وتوصيل', craftsman:'حرفي / مقاول', salon:'صالون / كوافير', education:'تعليم وطفولة',
+    community:'شريك مجتمعي', other:'نشاط عام'
+  };
+  let body = `<div class="section-note">أظهرنا الأسئلة الخاصة بفئة "<b>${catLabel[category]||'—'}</b>" فقط.</div>`;
+
+  if(category === 'pharmacy'){
+    body += field_choices('services','الخدمات المتوفرة',['صرف روشتات','توصيل للمنازل','قياس ضغط','قياس سكر','مستحضرات تجميل','مستلزمات أطفال','أجهزة طبية'],true);
+    body += field_choices('accepts_insurance','يقبل تأمين صحي؟',['نعم','لا']);
+  }
+  else if(category === 'hospital'){
+    body += field_choices('hospital_departments','الأقسام المتوفرة',['باطنة','جراحة','نساء وتوليد','أطفال','طوارئ','عناية مركزة','أشعة','معمل تحاليل','صيدلية داخلية'],true);
+    body += field_text('bed_count','عدد الأسرة التقريبي','مثال: 40 سرير');
+    body += field_choices('has_er_24h','يوجد قسم طوارئ ٢٤ ساعة؟',['نعم','لا']);
+    body += field_choices('has_ambulance','يوجد سيارات إسعاف؟',['نعم','لا']);
+    body += field_choices('accepts_insurance','يقبل تأمين صحي؟',['نعم','لا']);
+  }
+  else if(category === 'lab'){
+    body += field_choices('lab_types','أنواع التحاليل المتاحة',['تحاليل دم عامة','تحاليل بول ومزارع','تحاليل هرمونات','تحاليل سكر وضغط','تحاليل جينية ومتخصصة'],true);
+    body += field_choices('home_sample','يوجد سحب عينة منزلي؟',['نعم','لا']);
+    body += field_text('result_time','متوسط مدة ظهور النتيجة','مثال: خلال 24 ساعة');
+    body += field_choices('accepts_insurance','يقبل تأمين صحي؟',['نعم','لا']);
+  }
+  else if(category === 'radiology'){
+    body += field_choices('radiology_types','أنواع الأشعة المتاحة',['أشعة عادية','سونار','أشعة مقطعية (CT)','رنين مغناطيسي (MRI)','ماموجرام','دوبلر'],true);
+    body += field_choices('booking','حجز مسبق مطلوب؟',['نعم','لا']);
+    body += field_text('report_time','متوسط وقت ظهور التقرير','مثال: نفس اليوم');
+  }
+  else if(category === 'vet'){
+    body += field_choices('vet_animals','أنواع الحيوانات',['قطط وكلاب','طيور','ماشية ومواشي','خيول','حيوانات أخرى'],true);
+    body += field_choices('vet_services','الخدمات',['تطعيمات','جراحات','رعاية منزلية','فحص دوري','عناية وتجميل'],true);
+    body += field_choices('emergency_care','رعاية طارئة متاحة؟',['نعم','لا']);
+  }
+  else if(category === 'doctor'){
+    body += field_select('specialty','التخصص',['باطنة','أطفال','نساء وتوليد','عظام','جلدية','أسنان','أنف وأذن','قلب','مخ وأعصاب','جراحة','عيون','أخرى'],true);
+    body += field_text('exam_fee','قيمة الكشف (بالجنيه)','مثال: 150');
+    body += field_text('wait_time','مدة الانتظار التقريبية','مثال: 20 دقيقة');
+    body += field_choices('booking','حجز مسبق؟',['نعم','لا']);
+    body += field_choices('accepts_insurance','يقبل تأمين صحي؟',['نعم','لا']);
+    body += field_choices('home_visit','كشف منزلي متاح؟',['نعم','لا']);
+  }
+  else if(category === 'restaurant'){
+    body += field_choices('services','الخدمات المتوفرة',['جلسات داخلية','جلسات عائلية','تيك أواي','توصيل','حجز مسبق','أكلات شرقية','أكلات غربية','مشروبات'],true);
+    body += `<div class="field"><label>قائمة الأسعار / المنيو <span class="opt">(اختياري)</span></label><div class="upload"><span>📋</span>ارفع صورة أو ملف المنيو<input type="file" accept="image/*,application/pdf"></div></div>`;
+  }
+  else if(category === 'grocery'){
+    body += field_choices('services','الخدمات المتوفرة',['توصيل','خضروات وفاكهة','لحوم','مجمدات','مخبوزات','دفع إلكتروني'],true);
+    body += field_text('main_products','المنتجات الأساسية','مثال: جزارة لحوم بقري وضأن');
+    body += field_choices('custom_order_prep','يوجد تجهيز/ذبح حسب الطلب؟',['نعم','لا']);
+  }
+  else if(category === 'retail'){
+    body += field_text('main_products','نوع البضاعة الرئيسية','مثال: ملابس رجالي وحريمي');
+    body += field_choices('services','الخدمات',['تبديل واسترجاع','تقسيط / أقساط','توصيل','طلب أونلاين'],true);
+    body += field_text('brands','العلامات التجارية المتوفرة','اختياري');
+  }
+  else if(category === 'transport'){
+    body += field_select('vehicle_type','نوع المركبة',['توك توك','سيارة ملاكي','ميكروباص','دراجة نارية','شاحنة نقل']);
+    body += field_text('coverage_area','نطاق التغطية','مثال: داخل القرية فقط، أو المركز بالكامل');
+    body += field_choices('pricing_method','طريقة التسعير',['سعر ثابت','حسب الكيلومتر','حسب الاتفاق']);
+    body += field_choices('available_24h','متاح ٢٤ ساعة؟',['نعم','لا']);
+  }
+  else if(category === 'craftsman'){
+    body += field_text('exact_specialty','التخصص الدقيق','مثال: تركيب وصيانة تكييفات');
+    body += field_text('years_experience','سنوات الخبرة','مثال: 8 سنوات');
+    body += field_choices('free_inspection','معاينة مجانية؟',['نعم','لا']);
+    body += field_choices('has_warranty','ضمان على الشغل؟',['نعم','لا']);
+    body += field_text('warranty_period','مدة الضمان (إن وجد)','مثال: 6 شهور');
+    body += field_choices('works_outside_village','يعمل خارج القرية؟',['نعم','لا']);
+  }
+  else if(category === 'salon'){
+    body += field_choices('salon_serves','يخدم',['رجالي','حريمي','أطفال','الجميع']);
+    body += field_choices('salon_services','الخدمات',['قص شعر','صبغة','عناية بالبشرة','مكياج','حجامة'],true);
+    body += field_choices('booking','حجز مسبق؟',['نعم','لا']);
+    body += field_choices('home_visit','خدمة منزلية؟',['نعم','لا']);
+  }
+  else if(category === 'education'){
+    body += field_choices('edu_stages','المرحلة الدراسية',['حضانة','ابتدائي','إعدادي','ثانوي'],true);
+    body += field_choices('edu_system','نظام الدراسة',['عام','أزهري','لغات','دولي']);
+    body += field_text('annual_fees','رسوم تقريبية سنوية','مثال: 3000 جنيه');
+    body += field_choices('has_school_bus','يوجد باص مدرسي؟',['نعم','لا']);
+  }
+  else if(category === 'community'){
+    body += field_text('initiative_type','نوع المبادرة أو الجمعية','مثال: جمعية خيرية، مبادرة تنموية');
+    body += field_text('beneficiaries','الفئة المستفيدة','مثال: الأيتام، كبار السن، ذوو الهمم');
+    body += `<div class="field"><label>طرق دعم المبادرة</label><textarea name="support_ways" placeholder="تبرع، تطوع، رعاية...">${v('support_ways')}</textarea></div>`;
+  }
+  else if(category === 'other'){
+    body += field_choices('services','الخدمات المتوفرة',['خدمة منزلية','توصيل','حجز مسبق','ضمان على الخدمة'],true);
+    body += `<div class="field"><label>صف خدماتك بإيجاز</label><textarea name="services_description" placeholder="مثال: تركيب وصيانة تكييفات، تسعير حسب المسافة...">${v('services_description')}</textarea></div>`;
+  }
+  else {
+    body += `<div class="hint">⚠️ رجاءً ارجع لخطوة "النشاط" واختر نوع النشاط أولاً لعرض الأسئلة المناسبة.</div>`;
+  }
+  return `<div class="section-title">🧰 الخدمات</div>${body}`;
+}
+
+// helpers لبناء أنواع الحقول المختلفة داخل قسم الخدمات
+function field_choices(name, label, options, multi=false){
+  return `<div class="field"><label>${label}</label><div class="choice-grid">${choiceGroup(name, options, multi)}</div></div>`;
+}
+function field_text(name, label, placeholder=''){
+  return `<div class="field"><label>${label}</label><input type="text" name="${name}" value="${v(name)}" placeholder="${placeholder}"></div>`;
+}
+function field_select(name, label, options, required=false){
+  return `<div class="field"><label>${label}${required?' <span class="req">*</span>':''}</label>
+    <select name="${name}"><option value="">— اختر —</option>${options.map(o=>`<option ${v(name)===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+}
+
+window.setCategory = function(val, label){
+  category = val || null;
+  answers.activity_type_label = label || '';
+  const hint = document.getElementById('typeHint');
+  const map = {
+    pharmacy:'✅ أسئلة الصيدليات', hospital:'✅ أسئلة المستشفيات', lab:'✅ أسئلة معامل التحاليل',
+    radiology:'✅ أسئلة مراكز الأشعة', vet:'✅ أسئلة العيادات البيطرية', doctor:'✅ أسئلة الأطباء والعيادات',
+    restaurant:'✅ أسئلة المطاعم والمقاهي', grocery:'✅ أسئلة البقالة والأسواق', retail:'✅ أسئلة المحلات التجارية',
+    transport:'✅ أسئلة النقل والتوصيل', craftsman:'✅ أسئلة الحرفيين والمقاولين', salon:'✅ أسئلة الصالونات',
+    education:'✅ أسئلة المدارس والحضانات', community:'✅ أسئلة الشركاء المجتمعيين', other:'✅ أسئلة عامة'
+  };
+  if(hint) hint.textContent = val ? (map[val] + ' ستظهر في خطوة الخدمات.') : '';
+}
+
+window.setHours = function(is24, el){
+  hours24 = is24;
+  document.querySelectorAll('#hoursGroup .choice').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('daysBlock').classList.toggle('hidden', is24);
+}
+
+function renderNav(){
+  const isLast = current === STEPS.length - 1;
+  return `<div class="nav">
+      ${current>0 ? `<button class="btn-back" onclick="go(-1)">→ رجوع</button>` : `<span></span>`}
+      ${isLast ? `<button class="btn-submit" id="submitBtn" onclick="submitForm()">إرسال النموذج ✓</button>` : `<button class="btn-next" onclick="go(1)">التالي ←</button>`}
+    </div>`;
+}
+
+function render(){
+  renderStepper();
+  card.innerHTML = stepHTML(current) + renderNav();
+}
+
+window.go = function(dir){
+  saveTextInputs();
+  if(dir === 1 && current === 1 && !category){ alert('من فضلك اختر نوع النشاط أولًا.'); return; }
+  current = Math.max(0, Math.min(STEPS.length-1, current+dir));
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================================
+   إرسال البيانات: تُحفظ كصف جديد داخل ملف Excel في مستودع GitHub
+   نفسه، باستخدام GitHub Contents API + مكتبة SheetJS.
+   ============================================================ */
+async function commitToGitHub(rowObject){
+  const apiUrl = `https://api.github.com/repos/${CONFIG.OWNER}/${CONFIG.REPO}/contents/${CONFIG.FILE_PATH}`;
+  const headers = {
+    'Authorization': 'Bearer ' + CONFIG.GITHUB_TOKEN,
+    'Accept': 'application/vnd.github+json'
+  };
+
+  let sha = null;
+  let workbook;
+
+  const getRes = await fetch(`${apiUrl}?ref=${CONFIG.BRANCH}`, { headers });
+  if(getRes.status === 200){
+    const fileData = await getRes.json();
+    sha = fileData.sha;
+    const cleanBase64 = fileData.content.replace(/\n/g, '');
+    workbook = XLSX.read(cleanBase64, { type: 'base64' });
+  } else if(getRes.status === 404){
+    workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([]), 'Responses');
+  } else {
+    throw new Error(`تعذّرت قراءة ملف الإكسل الحالي (${getRes.status})`);
+  }
+
+  const sheetName = workbook.SheetNames[0];
+  const ws = workbook.Sheets[sheetName];
+  const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+  let headerList = json.length ? Object.keys(json[0]) : [];
+  Object.keys(rowObject).forEach(k => { if(!headerList.includes(k)) headerList.push(k); });
+
+  json.push(rowObject);
+  const newWs = XLSX.utils.json_to_sheet(json, { header: headerList });
+  workbook.Sheets[sheetName] = newWs;
+
+  const outBase64 = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+
+  const putBody = {
+    message: `رد جديد: ${rowObject.activity_name_ar || 'بدون اسم'} — ${rowObject.submitted_at}`,
+    content: outBase64,
+    branch: CONFIG.BRANCH
+  };
+  if(sha) putBody.sha = sha;
+
+  const putRes = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify(putBody)
+  });
+
+  if(!putRes.ok){
+    const errBody = await putRes.text();
+    const err = new Error(`فشل حفظ الرد على GitHub (${putRes.status}): ${errBody}`);
+    err.status = putRes.status;
+    throw err;
+  }
+}
+
+async function commitWithRetry(rowObject, attempts=3){
+  for(let i=0; i<attempts; i++){
+    try{ await commitToGitHub(rowObject); return; }
+    catch(err){
+      const isConflict = err.status === 409 || (err.message && err.message.includes('409'));
+      if(isConflict && i < attempts-1) continue; // في حالة تعارض (رد اتبعت في نفس اللحظة)، أعد المحاولة
+      throw err;
+    }
+  }
+}
+
+window.submitForm = async function(){
+  saveTextInputs();
+  const c1 = document.getElementById('c1').checked;
+  const c2 = document.getElementById('c2').checked;
+  const c3 = document.getElementById('c3').checked;
+  const errBox = document.getElementById('errBox');
+  if(!c1 || !c2 || !c3){
+    errBox.innerHTML = `<div class="err-box">من فضلك وافق على الإقرارات الثلاثة قبل الإرسال.</div>`;
+    return;
+  }
+  errBox.innerHTML = '';
+  answers.submitted_at = new Date().toISOString();
+  answers.category = category;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'جارٍ الحفظ...';
+
+  const finish = () => {
+    card.innerHTML = `<div class="done-screen">
+        <div class="done-seal">✅</div>
+        <h2>تم استلام طلبك</h2>
+        <p>شكرًا لتسجيل نشاطك في دليل العسيرات. سيراجع فريقنا بياناتك خلال ٤٨ ساعة، وسنتواصل معك على الرقم المسجَّل عند النشر.</p>
+      </div>`;
+    stepLabel.textContent = 'اكتمل التسجيل 🎉';
+  };
+
+  if(!CONFIG.GITHUB_TOKEN || CONFIG.GITHUB_TOKEN.includes('PASTE_YOUR')){
+    console.log('بيانات النموذج (لسه مفيش توكن GitHub متظبط):', answers);
+    setTimeout(finish, 500);
+    return;
+  }
+
+  try{
+    await commitWithRetry(answers);
+    finish();
+  } catch(err){
+    console.error(err);
+    btn.disabled = false; btn.textContent = 'إرسال النموذج ✓';
+    errBox.innerHTML = `<div class="err-box">تعذّر حفظ الرد: ${err.message || 'خطأ غير معروف'}. تأكد من صلاحيات التوكن واتصالك بالإنترنت ثم حاول مرة أخرى.</div>`;
+  }
+}
+
+render();
+</script>
+</body>
+</html>
